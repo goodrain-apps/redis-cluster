@@ -14,12 +14,13 @@
 
 FROM alpine:3.8
 
-RUN apk add --no-cache redis sed bash
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk add --no-cache redis sed bash
 
 COPY redis-master.conf /redis-master/redis.conf
 COPY redis-slave.conf /redis-slave/redis.conf
 COPY run.sh /run.sh
-
+ENV TZ Aisa/Shanghai
 CMD [ "/run.sh" ]
 
 ENTRYPOINT [ "bash", "-c" ]

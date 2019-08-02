@@ -1,13 +1,25 @@
-FROM redis:4.0.14-alpine
-ENV TZ Asia/Shanghai
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
-    apk add --no-cache bash telnet && \
-    wget https://github.com/barnettZQG/env2file/releases/download/0.1.1/env2file-linux -O /usr/bin/env2file && \
-    chmod +x /usr/bin/env2file
+# Copyright 2016 The Kubernetes Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
+FROM alpine:3.8
 
-EXPOSE  6379
-VOLUME /data
+RUN apk add --no-cache redis sed bash
 
-ADD docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+COPY redis-master.conf /redis-master/redis.conf
+COPY redis-slave.conf /redis-slave/redis.conf
+COPY run.sh /run.sh
+
+CMD [ "/run.sh" ]
+
+ENTRYPOINT [ "bash", "-c" ]
